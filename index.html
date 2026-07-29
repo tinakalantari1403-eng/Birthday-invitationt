@@ -137,43 +137,6 @@ transform:translateY(-260px);
 z-index:4;
 }
 
-.card{
-display:flex;
-overflow:hidden;
-perspective:1000px;
-}
-
-.card .left,
-.card .right{
-width:50%;
-height:100%;
-overflow:hidden;
-transition:1.5s;
-}
-
-.card .left img,
-.card .right img{
-height:100%;
-width:200%;
-object-fit:cover;
-}
-
-.card .left img{
-transform:translateX(0);
-}
-
-.card .right img{
-transform:translateX(-50%);
-}
-
-.envelope.open .left{
-transform:rotateY(-35deg);
-}
-
-.envelope.open .right{
-transform:rotateY(35deg);
-}
-
 </style>
 </head>
 
@@ -194,14 +157,8 @@ transform:rotateY(35deg);
     </div>
 
 <div class="card">
-    <div class="left">
-        <img src="IMG_4152.jpeg">
-    </div>
-    <div class="right">
-        <img src="IMG_4152.jpeg">
-    </div>
+    <img src="IMG_4152.jpeg">
 </div>
-
 
 <div class="shine"></div>
 
