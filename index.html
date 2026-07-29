@@ -137,6 +137,17 @@ transform:translateY(-220px);
 z-index:4;
 }
 
+/* کارت نیمه بیرون آمده */
+.envelope.open .card{
+transform:translateY(-80px);
+z-index:4;
+}
+
+/* کارت کامل بیرون */
+.card.full{
+transform:translateY(-350px);
+}
+    
 </style>
 </head>
 
@@ -156,7 +167,7 @@ z-index:4;
         💖
     </div>
 
-<div class="card">
+<div class="card" onclick="showFullCard(event)">
     <img src="IMG_4152.jpeg">
 </div>
 
@@ -167,7 +178,13 @@ z-index:4;
 
 function openCard(){
     document.querySelector(".envelope")
-    .classList.toggle("open");
+    .classList.add("open");
+}
+
+function showFullCard(event){
+    event.stopPropagation();
+    document.querySelector(".card")
+    .classList.add("full");
 }
 
 </script>
