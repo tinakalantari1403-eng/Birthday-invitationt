@@ -2,128 +2,71 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>کارت دعوت دیجیتال</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارت دعوت</title>
     <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fff1f2; overflow: hidden; font-family: sans-serif; }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fff1f2; overflow: hidden; }
 
-        /* افکت گلبرگ‌ها */
-        .petals { position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
-        .petal { position: absolute; background: #fda4af; border-radius: 0 50% 0 50%; opacity: 0.6; animation: fall 8s linear infinite; }
+        /* گلبرگ‌ها */
+        .petals { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .petal { position: absolute; border-radius: 0 50% 0 50%; opacity: 0.6; animation: fall 8s linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
 
-        /* ظرف اصلی برای مدیریت لایه‌ها */
-        .container { position: relative; width: 300px; height: 200px; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        .container { position: relative; width: 300px; height: 200px; z-index: 10; }
 
-        /* پاکت نامه */
-        .envelope { 
-            width: 100%; 
-            height: 100%; 
-            background: #fecdd3; 
-            position: absolute; 
-            border-radius: 12px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            z-index: 2; /* پاکت روی کارت قرار دارد */
-        }
+        /* پاکت */
+        .envelope { width: 300px; height: 200px; background: #fecdd3; position: relative; border-radius: 0 0 10px 10px; z-index: 2; cursor: pointer; }
+        /* درب پاکت */
+        .envelope-flap { position: absolute; top: 0; width: 300px; height: 100px; background: #fda4af; clip-path: polygon(0 0, 100% 0, 50% 100%); transition: 0.5s; transform-origin: top; z-index: 3; }
+        .heart { position: absolute; top: 50px; left: 130px; font-size: 30px; z-index: 4; pointer-events: none; }
 
-        .heart { font-size: 35px; position: relative; z-index: 3; animation: shine 1.5s infinite alternate; cursor: pointer; }
-        @keyframes shine { from { filter: brightness(1); transform: scale(1); } to { filter: brightness(1.3); transform: scale(1.1); } }
+        /* کارت */
+        .card { width: 260px; height: 180px; background: white; position: absolute; bottom: 10px; left: 20px; transition: 0.8s; z-index: 1; border: 2px solid #fda4af; }
+        .card img { width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: 0.5s; }
 
-        /* کارت - در حالت عادی کاملاً زیر پاکت و مخفی است */
-        .card { 
-            width: 260px; 
-            height: 180px; 
-            background: white; 
-            position: absolute; 
-            bottom: 0; 
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-            z-index: 1; /* زیر پاکت قرار دارد */
-            border-radius: 8px; 
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* عکس را کامل و بدون کشیدگی نشان می‌دهد */
-            opacity: 0; 
-            transition: opacity 0.5s ease-in; 
-        }
-
-        /* استایل‌های حالت باز شده */
-        .card.half-out {
-            transform: translateY(-80px); /* نیمه بیرون آمدن */
-            z-index: 4; /* وقتی بیرون می‌آید، روی پاکت قرار می‌گیرد */
-        }
-
-        .card.full-open {
-            transform: translateY(-160px) scale(1.3); /* بزرگ شدن و بالا آمدن */
-            z-index: 5; /* بالاترین لایه */
-            height: 350px; /* تنظیم ارتفاع برای جلوگیری از بریدگی */
-            width: 280px;
-        }
-        
-        /* اگر می‌خواهید در حالت باز شده عکس خیلی بزرگ شود، این را تنظیم کنید */
-        .card.full-open img {
-            opacity: 1;
-            object-fit: contain; /* تغییر به contain باعث می‌شود کل عکس بدون بریدگی دیده شود */
-            background: white;
-        }
-
+        /* حالت‌های کلیک */
+        .open-flap { transform: rotateX(180deg); }
+        .card.move-out { bottom: 120px; }
+        .card.go-center { bottom: 50vh; transform: translateY(50%) scale(1.5); z-index: 5; }
     </style>
 </head>
 <body>
 
 <div class="petals" id="petals"></div>
-
-<div class="container">
-    <!-- کارت -->
-    <div class="card" id="card">
-        <img src="IMG_4152.jpeg" id="card-img">
-    </div>
-
-    <!-- پاکت -->
-    <div class="envelope" id="envelope">
+<div class="container" id="container">
+    <div class="envelope-flap" id="flap"></div>
+    <div class="envelope" id="env">
         <div class="heart">💖</div>
     </div>
+    <div class="card" id="card"><img src="IMG_4152.jpeg" id="photo"></div>
 </div>
 
 <script>
-    // تولید گلبرگ‌ها
-    const petalsContainer = document.getElementById('petals');
-    for(let i=0; i<20; i++) {
+    // گلبرگ‌های رنگی
+    const colors = ['#fda4af', '#fbbf24', '#fef08a']; // صورتی، نارنجی، لیمویی
+    const pContainer = document.getElementById('petals');
+    for(let i=0; i<25; i++) {
         let p = document.createElement('div');
         p.className = 'petal';
         p.style.left = Math.random() * 100 + '%';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
         p.style.animationDelay = Math.random() * 8 + 's';
         p.style.width = p.style.height = (Math.random() * 15 + 10) + 'px';
-        petalsContainer.appendChild(p);
+        pContainer.appendChild(p);
     }
 
-    let clickCount = 0;
-    const envelope = document.getElementById('envelope');
-    const card = document.getElementById('card');
-    const img = document.getElementById('card-img');
-
-    envelope.addEventListener('click', () => {
-        clickCount++;
-        
-        if(clickCount === 1) {
-            // مرحله اول: نیمه بیرون آمدن
-            card.classList.add('half-out');
-        } else if(clickCount === 2) {
-            // مرحله دوم: باز شدن کامل و بزرگ شدن
-            card.classList.add('full-open');
-            setTimeout(() => {
-                img.style.opacity = '1';
-            }, 400);
+    let step = 0;
+    document.getElementById('container').addEventListener('click', () => {
+        step++;
+        if(step === 1) {
+            document.getElementById('flap').classList.add('open-flap');
+            document.getElementById('card').classList.add('move-out');
+        } else if(step === 2) {
+            const card = document.getElementById('card');
+            card.classList.add('go-center');
+            document.getElementById('photo').style.opacity = '1';
         }
     });
 </script>
-
 </body>
 </html>
