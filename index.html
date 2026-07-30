@@ -3,39 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>کارت دعوت</title>
+    <title>کارت دعوت دیجیتال</title>
     <style>
         body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #fff1f2; overflow: hidden; font-family: sans-serif; }
 
         /* افکت گلبرگ‌ها */
-        .petals { position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        .petals { position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
         .petal { position: absolute; background: #fda4af; border-radius: 0 50% 0 50%; opacity: 0.6; animation: fall 8s linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-10vh); } 100% { transform: translateY(110vh); } }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
 
-        /* پاکت */
-        .envelope { width: 280px; height: 180px; background: #fecdd3; position: relative; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .heart { font-size: 30px; animation: shine 1.5s infinite alternate; }
-        @keyframes shine { from { filter: brightness(1); } to { filter: brightness(1.3); } }
+        /* ظرف اصلی برای مدیریت لایه‌ها */
+        .container { position: relative; width: 300px; height: 200px; display: flex; justify-content: center; align-items: center; z-index: 10; }
 
-        /* کارت */
-        .card { width: 240px; height: 160px; background: white; position: absolute; bottom: 10px; transition: 0.6s ease-out; z-index: 1; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.8s; }
+        /* پاکت نامه */
+        .envelope { 
+            width: 100%; 
+            height: 100%; 
+            background: #fecdd3; 
+            position: absolute; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 2; /* پاکت روی کارت قرار دارد */
+        }
+
+        .heart { font-size: 35px; position: relative; z-index: 3; animation: shine 1.5s infinite alternate; cursor: pointer; }
+        @keyframes shine { from { filter: brightness(1); transform: scale(1); } to { filter: brightness(1.3); transform: scale(1.1); } }
+
+        /* کارت - در حالت عادی کاملاً زیر پاکت و مخفی است */
+        .card { 
+            width: 260px; 
+            height: 180px; 
+            background: white; 
+            position: absolute; 
+            bottom: 0; 
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1; /* زیر پاکت قرار دارد */
+            border-radius: 8px; 
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* عکس را کامل و بدون کشیدگی نشان می‌دهد */
+            opacity: 0; 
+            transition: opacity 0.5s ease-in; 
+        }
+
+        /* استایل‌های حالت باز شده */
+        .card.half-out {
+            transform: translateY(-80px); /* نیمه بیرون آمدن */
+            z-index: 4; /* وقتی بیرون می‌آید، روی پاکت قرار می‌گیرد */
+        }
+
+        .card.full-open {
+            transform: translateY(-160px) scale(1.3); /* بزرگ شدن و بالا آمدن */
+            z-index: 5; /* بالاترین لایه */
+            height: 350px; /* تنظیم ارتفاع برای جلوگیری از بریدگی */
+            width: 280px;
+        }
+        
+        /* اگر می‌خواهید در حالت باز شده عکس خیلی بزرگ شود، این را تنظیم کنید */
+        .card.full-open img {
+            opacity: 1;
+            object-fit: contain; /* تغییر به contain باعث می‌شود کل عکس بدون بریدگی دیده شود */
+            background: white;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="petals" id="petals"></div>
-<div class="envelope" id="envelope">
-    <div class="heart">💖</div>
+
+<div class="container">
+    <!-- کارت -->
     <div class="card" id="card">
         <img src="IMG_4152.jpeg" id="card-img">
+    </div>
+
+    <!-- پاکت -->
+    <div class="envelope" id="envelope">
+        <div class="heart">💖</div>
     </div>
 </div>
 
 <script>
     // تولید گلبرگ‌ها
     const petalsContainer = document.getElementById('petals');
-    for(let i=0; i<15; i++) {
+    for(let i=0; i<20; i++) {
         let p = document.createElement('div');
         p.className = 'petal';
         p.style.left = Math.random() * 100 + '%';
@@ -45,21 +105,25 @@
     }
 
     let clickCount = 0;
-    document.getElementById('envelope').addEventListener('click', () => {
+    const envelope = document.getElementById('envelope');
+    const card = document.getElementById('card');
+    const img = document.getElementById('card-img');
+
+    envelope.addEventListener('click', () => {
         clickCount++;
-        const card = document.getElementById('card');
-        const img = document.getElementById('card-img');
         
         if(clickCount === 1) {
-            card.style.bottom = '120px'; // کارت تاخورده بیرون می‌آید
+            // مرحله اول: نیمه بیرون آمدن
+            card.classList.add('half-out');
         } else if(clickCount === 2) {
-            card.style.bottom = '50%';
-            card.style.transform = 'translateY(50%)';
-            card.style.height = '450px'; // کارت باز می‌شود
-            card.style.width = '320px';
-            img.style.opacity = '1';
+            // مرحله دوم: باز شدن کامل و بزرگ شدن
+            card.classList.add('full-open');
+            setTimeout(() => {
+                img.style.opacity = '1';
+            }, 400);
         }
     });
 </script>
+
 </body>
 </html>
